@@ -49,16 +49,18 @@ def health():
     return "API is running!"
 
 
+import traceback
+
 @app.route('/predict', methods=['POST'])
 def predict():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image file provided'}), 400
-    
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({'error': 'Empty filename'}), 400
-    
     try:
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image file provided'}), 400
+
+        file = request.files['image']
+        if file.filename == '':
+            return jsonify({'error': 'Empty filename'}), 400
+
         img_bytes = file.read()
         img = Image.open(io.BytesIO(img_bytes)).convert('RGB')
         input_tensor = transform(img).unsqueeze(0)
@@ -69,7 +71,9 @@ def predict():
             predicted_class_name = food101_classes[predicted_class_idx]
 
         return jsonify({'predicted_class': predicted_class_name})
+
     except Exception as e:
+        print(traceback.format_exc()) 
         return jsonify({'error': str(e)}), 500
 
 

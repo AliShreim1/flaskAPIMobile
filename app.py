@@ -44,6 +44,11 @@ food101_classes = [
     'waffles'
 ]
 
+@app.route('/')
+def health():
+    return "API is running!"
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'image' not in request.files:
